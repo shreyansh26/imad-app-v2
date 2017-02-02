@@ -19,6 +19,36 @@ var articleOne = {
            </p>`
 };
 
+var articleTwo={
+  title:'USA | Shreyansh',
+  date: 'Feb 2, 2017',
+  heading: 'United States of America',
+  content:`<p>
+           The United States of America (USA), commonly referred to as the United States (U.S.) or America, is a federal republic composed of 50 states, a federal district, five major self-governing territories, and various possessions.[fn 1] Forty-eight of the fifty states and the federal district are contiguous and located in North America between Canada and Mexico. The state of Alaska is in the northwest corner of North America, bordered by Canada to the east and across the Bering Strait from Russia to the west. The state of Hawaii is an archipelago in the mid-Pacific Ocean. The U.S. territories are scattered about the Pacific Ocean and the Caribbean Sea. Nine time zones are covered. The geography, climate and wildlife of the country are extremely diverse.
+          </p>
+          <p>
+          At 3.8 million square miles (9.8 million km2)[19] and with over 324 million people, the United States is the world's fourth-largest country by total area (and fourth-largest by land area)[fn 2] and the third-most populous. It is one of the world's most ethnically diverse and multicultural nations, and is home to the world's largest immigrant population.[26] Urbanization climbed to over 80% in 2010 and leads to growing megaregions. The country's capital is Washington, D.C. and its largest city is New York City; the other major metropolitan areas, all with around five million or more inhabitants, are Los Angeles, Chicago, San Francisco, Boston, Dallas, Philadelphia, Houston, Miami, and Atlanta.
+          </p>
+          <p>
+          The United States embarked on a vigorous expansion across North America throughout the 19th century,[29] displacing American Indian tribes, acquiring new territories, and gradually admitting new states until it spanned the continent by 1848.[29] During the second half of the 19th century, the American Civil War led to the end of legal slavery in the country.[30][31] By the end of that century, the United States extended into the Pacific Ocean,[32] and its economy, driven in large part by the Industrial Revolution, began to soar.[33] The Spanish–American War and World War I confirmed the country's status as a global military power. The United States emerged from World War II as a global superpower, the first country to develop nuclear weapons, the only country to use them in warfare, and a permanent member of the United Nations Security Council. It is a founding member of the Organization of American States (OAS) and various other Pan-American and international organizations. The end of the Cold War and the dissolution of the Soviet Union in 1991 left the United States as the world's sole superpower
+          </p>`
+};
+
+var articleThree={
+  date: 'Feb 2, 2017',
+  title: 'Russia | Shreyansh',
+  heading: 'Russia',
+  content: `<p>
+           Russia (Listeni/ˈrʌʃə/; Russian: Росси́я, tr. Rossija; IPA: [rɐˈsʲijə]; from the Greek: Ρωσία — Rus'), also officially known as the Russian Federation[12] (Russian: Росси́йская Федера́ция, tr. Rossijskaja Federacija; IPA: [rɐˈsʲijskəjə fʲɪdʲɪˈratsɨjə]), is a country in Eurasia.[13] At 17,075,200 square kilometres (6,592,800 sq mi), Russia is the largest country in the world by surface area, covering more than one-eighth of the Earth's inhabited land area,[14][15][16] and the ninth most populous, with over 140 million people at the end of March 2016.[17][7] The European western part of the country is much more populated and urbanised than the eastern, about 77% of the population live in European Russia. Russia's capital Moscow is one of the largest cities in the world, other major urban centers include Saint Petersburg, Novosibirsk, Yekaterinburg, Nizhny Novgorod and Samara.
+           </p>
+           <p>
+           Extending across the entirety of Northern Asia and much of Eastern Europe, Russia spans eleven time zones and incorporates a wide range of environments and landforms. From northwest to southeast, Russia shares land borders with Norway, Finland, Estonia, Latvia, Lithuania and Poland (both with Kaliningrad Oblast), Belarus, Ukraine, Georgia, Azerbaijan, Kazakhstan, China, Mongolia, and North Korea. It shares maritime borders with Japan by the Sea of Okhotsk and the U.S. state of Alaska across the Bering Strait.
+           </p>
+           <p>
+           The nation's history began with that of the East Slavs, who emerged as a recognizable group in Europe between the 3rd and 8th centuries AD.[18] Founded and ruled by a Varangian warrior elite and their descendants, the medieval state of Rus arose in the 9th century. In 988 it adopted Orthodox Christianity from the Byzantine Empire,[19] beginning the synthesis of Byzantine and Slavic cultures that defined Russian culture for the next millennium.[19] Rus' ultimately disintegrated into a number of smaller states; most of the Rus' lands were overrun by the Mongol invasion and became tributaries of the nomadic Golden Horde in the 13th century.[20] The Grand Duchy of Moscow gradually reunified the surrounding Russian principalities, achieved independence from the Golden Horde, and came to dominate the cultural and political legacy of Kievan Rus'. By the 18th century, the nation had greatly expanded through conquest, annexation, and exploration to become the Russian Empire, which was the third largest empire in history, stretching from Poland on the west to Alaska on the east
+           </p>`,
+};
+
 function createTemplate(data){
 var title=data.title;
 var heading= data.heading;
@@ -63,11 +93,11 @@ app.get('/article1', function(req,res){
 });
 
 app.get('/article2', function(req,res){
-   res.sendFile(path.join(__dirname, 'ui', 'article-two.html'));
+   res.send(createTemplate(articleTwo));
 });
 
 app.get('/article3', function(req,res){
-    res.sendFile(path.join(__dirname, 'ui', 'article-three.html'));
+    res.send(createTemplate(articleThree));
 });
 
 app.get('/ui/style.css', function (req, res) {
