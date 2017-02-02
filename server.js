@@ -5,7 +5,7 @@ var app = express();
 app.use(morgan('combined'));
 
 var articles={
-        'article-one':{
+        'article1':{
           title: 'India | Shreyansh',
           date: 'Feb 2, 2017',
           heading:'India (Bharat)',
@@ -19,7 +19,7 @@ var articles={
                        In 2015, the Indian economy was the world's seventh largest by nominal GDP and third largest by purchasing power parity.[14] Following market-based economic reforms in 1991, India became one of the fastest-growing major economies and is considered a newly industrialised country. However, it continues to face the challenges of poverty, corruption, malnutrition, and inadequate public healthcare. A nuclear weapons state and regional power, it has the third largest standing army in the world and ranks sixth in military expenditure among nations. India is a federal constitutional republic governed under a parliamentary system and consists of 29 states and 7 union territories. It is a pluralistic, multilingual and multi-ethnic society and is also home to a diversity of wildlife in a variety of protected habitats.
                    </p>`
         },
-        'article-two':{
+        'article2':{
           title:'USA | Shreyansh',
           date: 'Feb 2, 2017',
           heading: 'United States of America',
@@ -33,7 +33,7 @@ var articles={
                   The United States embarked on a vigorous expansion across North America throughout the 19th century,[29] displacing American Indian tribes, acquiring new territories, and gradually admitting new states until it spanned the continent by 1848.[29] During the second half of the 19th century, the American Civil War led to the end of legal slavery in the country.[30][31] By the end of that century, the United States extended into the Pacific Ocean,[32] and its economy, driven in large part by the Industrial Revolution, began to soar.[33] The Spanish–American War and World War I confirmed the country's status as a global military power. The United States emerged from World War II as a global superpower, the first country to develop nuclear weapons, the only country to use them in warfare, and a permanent member of the United Nations Security Council. It is a founding member of the Organization of American States (OAS) and various other Pan-American and international organizations. The end of the Cold War and the dissolution of the Soviet Union in 1991 left the United States as the world's sole superpower
                   </p>`
         },
-        'article-three':{
+        'article3':{
           date: 'Feb 2, 2017',
           title: 'Russia | Shreyansh',
           heading: 'Russia',
