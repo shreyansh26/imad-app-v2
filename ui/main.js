@@ -5,3 +5,9 @@ console.log('Loaded!');
 var element= document.getElementById('center-text');
 
 element.innerHTML='Hello';
+
+//Move the image
+var img = document.getElementById('madi');
+img.onclick= function(){
+    img.style.mrginLeft='100px';
+};
