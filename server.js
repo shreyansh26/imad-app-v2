@@ -13,7 +13,7 @@ var config = {
   database: 'shreyansh26',
 };
 
-//var articles={
+/*var articles={
         'article1':{
           title: 'India | Shreyansh',
           date: 'Feb 2, 2017',
@@ -57,7 +57,7 @@ var config = {
                    </p>`,
         },
 };
-
+*/
 function createTemplate(data){
 var title=data.title;
 var heading= data.heading;
