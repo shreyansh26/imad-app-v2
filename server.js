@@ -4,211 +4,239 @@ var path = require('path');
 var Pool = require('pg').Pool;
 var crypto = require('crypto');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var jsdom = require('jsdom').jsdom;
+var document = jsdom('<html></html>', {});
+var window = document.defaultView;
+var $ = require('jquery')(window);
+
+var config = {
+  host: '127.0.0.1',
+  user: 'postgres',
+  database: 'postgres',
+  port: '5432',
+  password: 'kankunani'
+};
 
 var app = express();
 app.use(morgan('combined'));
 app.use(bodyParser.json());
+app.use(session({
+    secret: 'someRandomSecretValue',
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 30}
+}));
 
-var config = {
-  host: 'db.imad.hasura-app.io',
-  user: 'shreyansh26',
-  password: process.env.DB_PASSWORD,
-  port: '5432',
-  database: 'shreyansh26',
-};
+function createTemplate (data) {
+    var title = data.title;
+    var date = data.date;
+    var heading = data.heading;
+    var content = data.content;
 
-/*var articles={
-        'article1':{
-          title: 'India | Shreyansh',
-          date: 'Feb 2, 2017',
-          heading:'India (Bharat)',
-          content: `<p>
-                       India, officially the Republic of India (Bhārat Gaṇarājya),[e] is a country in South Asia. It is the seventh-largest country by area, the second-most populous country (with over 1.2 billion people), and the most populous democracy in the world. It is bounded by the Indian Ocean on the south, the Arabian Sea on the southwest, and the Bay of Bengal on the southeast. It shares land borders with Pakistan to the west;[f] China, Nepal, and Bhutan to the northeast; and Myanmar (Burma) and Bangladesh to the east. In the Indian Ocean, India is in the vicinity of Sri Lanka and the Maldives. India's Andaman and Nicobar Islands share a maritime border with Thailand and Indonesia. Its capital is New Delhi; other metropolises include Mumbai, Kolkata, Chennai, Bangalore, Hyderabad and Ahmedabad.
-                   </p>
-                   <p>
-                       Home to the ancient Indus Valley Civilisation and a region of historic trade routes and vast empires, the Indian subcontinent was identified with its commercial and cultural wealth for much of its long history.[17] Four religions–Hinduism, Buddhism, Jainism, and Sikhism–originated in India, whereas Zoroastrianism, Judaism, Christianity, and Islam arrived in the first millennium CE, and they also played a part in shaping the region's diverse culture. Gradually annexed and brought under the administration of the British East India Company from the early 18th century and administered directly by the United Kingdom after the Indian Rebellion of 1857, it became an independent nation in 1947 after a struggle for independence that was marked by non-violent resistance led by Mahatma Gandhi.
-                   </p>
-                   <p>
-                       In 2015, the Indian economy was the world's seventh largest by nominal GDP and third largest by purchasing power parity.[14] Following market-based economic reforms in 1991, India became one of the fastest-growing major economies and is considered a newly industrialised country. However, it continues to face the challenges of poverty, corruption, malnutrition, and inadequate public healthcare. A nuclear weapons state and regional power, it has the third largest standing army in the world and ranks sixth in military expenditure among nations. India is a federal constitutional republic governed under a parliamentary system and consists of 29 states and 7 union territories. It is a pluralistic, multilingual and multi-ethnic society and is also home to a diversity of wildlife in a variety of protected habitats.
-                   </p>`
-        },
-        'article2':{
-          title:'USA | Shreyansh',
-          date: 'Feb 2, 2017',
-          heading: 'United States of America',
-          content:`<p>
-                   The United States of America (USA), commonly referred to as the United States (U.S.) or America, is a federal republic composed of 50 states, a federal district, five major self-governing territories, and various possessions.[fn 1] Forty-eight of the fifty states and the federal district are contiguous and located in North America between Canada and Mexico. The state of Alaska is in the northwest corner of North America, bordered by Canada to the east and across the Bering Strait from Russia to the west. The state of Hawaii is an archipelago in the mid-Pacific Ocean. The U.S. territories are scattered about the Pacific Ocean and the Caribbean Sea. Nine time zones are covered. The geography, climate and wildlife of the country are extremely diverse.
-                  </p>
-                  <p>
-                  At 3.8 million square miles (9.8 million km2)[19] and with over 324 million people, the United States is the world's fourth-largest country by total area (and fourth-largest by land area)[fn 2] and the third-most populous. It is one of the world's most ethnically diverse and multicultural nations, and is home to the world's largest immigrant population.[26] Urbanization climbed to over 80% in 2010 and leads to growing megaregions. The country's capital is Washington, D.C. and its largest city is New York City; the other major metropolitan areas, all with around five million or more inhabitants, are Los Angeles, Chicago, San Francisco, Boston, Dallas, Philadelphia, Houston, Miami, and Atlanta.
-                  </p>
-                  <p>
-                  The United States embarked on a vigorous expansion across North America throughout the 19th century,[29] displacing American Indian tribes, acquiring new territories, and gradually admitting new states until it spanned the continent by 1848.[29] During the second half of the 19th century, the American Civil War led to the end of legal slavery in the country.[30][31] By the end of that century, the United States extended into the Pacific Ocean,[32] and its economy, driven in large part by the Industrial Revolution, began to soar.[33] The Spanish–American War and World War I confirmed the country's status as a global military power. The United States emerged from World War II as a global superpower, the first country to develop nuclear weapons, the only country to use them in warfare, and a permanent member of the United Nations Security Council. It is a founding member of the Organization of American States (OAS) and various other Pan-American and international organizations. The end of the Cold War and the dissolution of the Soviet Union in 1991 left the United States as the world's sole superpower
-                  </p>`
-        },
-        'article3':{
-          date: 'Feb 2, 2017',
-          title: 'Russia | Shreyansh',
-          heading: 'Russia',
-          content: `<p>
-                   Russia (Listeni/ˈrʌʃə/; Russian: Росси́я, tr. Rossija; IPA: [rɐˈsʲijə]; from the Greek: Ρωσία — Rus'), also officially known as the Russian Federation[12] (Russian: Росси́йская Федера́ция, tr. Rossijskaja Federacija; IPA: [rɐˈsʲijskəjə fʲɪdʲɪˈratsɨjə]), is a country in Eurasia.[13] At 17,075,200 square kilometres (6,592,800 sq mi), Russia is the largest country in the world by surface area, covering more than one-eighth of the Earth's inhabited land area,[14][15][16] and the ninth most populous, with over 140 million people at the end of March 2016.[17][7] The European western part of the country is much more populated and urbanised than the eastern, about 77% of the population live in European Russia. Russia's capital Moscow is one of the largest cities in the world, other major urban centers include Saint Petersburg, Novosibirsk, Yekaterinburg, Nizhny Novgorod and Samara.
-                   </p>
-                   <p>
-                   Extending across the entirety of Northern Asia and much of Eastern Europe, Russia spans eleven time zones and incorporates a wide range of environments and landforms. From northwest to southeast, Russia shares land borders with Norway, Finland, Estonia, Latvia, Lithuania and Poland (both with Kaliningrad Oblast), Belarus, Ukraine, Georgia, Azerbaijan, Kazakhstan, China, Mongolia, and North Korea. It shares maritime borders with Japan by the Sea of Okhotsk and the U.S. state of Alaska across the Bering Strait.
-                   </p>
-                   <p>
-                   The nation's history began with that of the East Slavs, who emerged as a recognizable group in Europe between the 3rd and 8th centuries AD.[18] Founded and ruled by a Varangian warrior elite and their descendants, the medieval state of Rus arose in the 9th century. In 988 it adopted Orthodox Christianity from the Byzantine Empire,[19] beginning the synthesis of Byzantine and Slavic cultures that defined Russian culture for the next millennium.[19] Rus' ultimately disintegrated into a number of smaller states; most of the Rus' lands were overrun by the Mongol invasion and became tributaries of the nomadic Golden Horde in the 13th century.[20] The Grand Duchy of Moscow gradually reunified the surrounding Russian principalities, achieved independence from the Golden Horde, and came to dominate the cultural and political legacy of Kievan Rus'. By the 18th century, the nation had greatly expanded through conquest, annexation, and exploration to become the Russian Empire, which was the third largest empire in history, stretching from Poland on the west to Alaska on the east
-                   </p>`,
-        },
-};
-*/
-function createTemplate(data){
-var title=data.title;
-var heading= data.heading;
-var date=data.date;
-var content=data.content;
-var HTMLTemplate=`<html>
-        <head>
-            <title>
-                ${title}
-            </title>
-            <meta name="viewpoort" content="width-device-width, initial-sacle=1" />
-            <link href="/ui/style.css" rel="stylesheet" />
-        
-        </head>
-        
-        <body>
-            <div class="container">
-                <div>
-                <a href="/">Home</a>
-            </div>
-           <hr/>
-           <h3>${heading}</h3>
-           <div>
-               ${date.toDateString()}
-           </div>
-           <div>
-               ${content}
-           </div>
-           </div>
-        </body>
+    var htmlTemplate = `
+    <html>
+      <head>
+          <title>
+              ${title}
+          </title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link href="/ui/style.css" rel="stylesheet" />
+      </head>
+      <body>
+          <div class="container">
+              <div>
+                  <a href="/">Home</a>
+              </div>
+              <hr/>
+              <h3>
+                  ${heading}
+              </h3>
+              <div>
+                  ${date.toDateString()}
+              </div>
+              <div>
+                ${content}
+              </div>
+              <hr/>
+              <h4>Comments</h4>
+              <div id="comment_form">
+              </div>
+              <div id="comments">
+                <center>Loading comments...</center>
+              </div>
+          </div>
+          <script type="text/javascript" src="/ui/article.js"></script>
+      </body>
     </html>
     `;
-    return HTMLTemplate;
+    return htmlTemplate;
 }
 
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));
 });
 
-function hash(input, salt){
+
+function hash (input, salt) {
+    // How do we create a hash?
     var hashed = crypto.pbkdf2Sync(input, salt, 10000, 512, 'sha512');
     return ["pbkdf2", "10000", salt, hashed.toString('hex')].join('$');
 }
 
 
-app.get('/hash/:input',function(req,res){
+app.get('/hash/:input', function(req, res) {
    var hashedString = hash(req.params.input, 'this-is-some-random-string');
    res.send(hashedString);
 });
 
-var pool = new Pool(config);
-app.post('/create-user',function(req,res){
-   //username, password 
+app.post('/create-user', function (req, res) {
+   // username, password
+   // {"username": "tanmai", "password": "password"}
+   // JSON
    var username = req.body.username;
    var password = req.body.password;
-   var salt = crypto.randomBytes(128).toString('hex');   
-   var dbString = hash(password,salt);
-   pool.query('INSERT INTO "user" (username,password) VALUES ($1,$2)', [username,dbString],function(err,result){
-       if(err){
+   var salt = crypto.randomBytes(128).toString('hex');
+   var dbString = hash(password, salt);
+   pool.query('INSERT INTO "users" (username, password) VALUES ($1, $2)', [username, dbString], function (err, result) {
+      if (err) {
           res.status(500).send(err.toString());
-      } 
-      else{
-          res.send('User successfully created: '+ username);
+      } else {
+          res.send('User successfully created: ' + username);
       }
    });
 });
 
+app.post('/login', function (req, res) {
+   var username = req.body.username;
+   var password = req.body.password;
 
-
-app.get('/test-db',function(req,res){
-   //Make a select request
-   //return a response with the result
-   pool.query('SELECT * FROM test',function(err,result){
-      if(err){
+   pool.query('SELECT * FROM "users" WHERE username = $1', [username], function (err, result) {
+      if (err) {
           res.status(500).send(err.toString());
-      } 
-      else{
+      } else {
+          if (result.rows.length === 0) {
+              res.status(403).send('username/password is invalid');
+          } else {
+              // Match the password
+              var dbString = result.rows[0].password;
+              var salt = dbString.split('$')[2];
+              var hashedPassword = hash(password, salt); // Creating a hash based on the password submitted and the original salt
+              if (hashedPassword === dbString) {
+
+                // Set the session
+                req.session.auth = {userId: result.rows[0].id};
+                // set cookie with a session id
+                // internally, on the server side, it maps the session id to an object
+                // { auth: {userId }}
+
+                res.send('credentials correct!');
+
+              } else {
+                res.status(403).send('username/password is invalid');
+              }
+          }
+      }
+   });
+});
+
+app.get('/check-login', function (req, res) {
+   if (req.session && req.session.auth && req.session.auth.userId) {
+       // Load the user object
+       pool.query('SELECT * FROM "users" WHERE id = $1', [req.session.auth.userId], function (err, result) {
+           if (err) {
+              res.status(500).send(err.toString());
+           } else {
+              res.send(result.rows[0].username);
+           }
+       });
+   } else {
+       res.status(400).send('You are not logged in');
+   }
+});
+
+app.get('/logout', function (req, res) {
+   delete req.session.auth;
+   res.send('<html><body>Logged out!<br/><br/><a href="/">Back to home</a></body></html>');
+});
+
+var pool = new Pool(config);
+
+app.get('/get-articles', function (req, res) {
+   // make a select request
+   // return a response with the results
+   pool.query('SELECT * FROM articlep ORDER BY date DESC', function (err, result) {
+      if (err) {
+          res.status(500).send(err.toString());
+      } else {
           res.send(JSON.stringify(result.rows));
       }
    });
 });
 
-app.get('/ui/main.js', function (req, res) {
-  res.sendFile(path.join(__dirname, 'ui', 'main.js'));
+app.get('/get-comments/:articleName', function (req, res) {
+   // make a select request
+   // return a response with the results
+   pool.query('SELECT comment.*, "users".username FROM articlep, comment, "users" WHERE articlep.title = $1 AND articlep.id = comment.article_id AND comment.user_id = "users".id ORDER BY comment.timestamp DESC', [req.params.articleName], function (err, result) {
+      if (err) {
+          res.status(500).send(err.toString());
+      } else {
+          res.send(JSON.stringify(result.rows));
+      }
+   });
 });
 
-var counter=0;
-app.get('/counter', function(req,res){
-   counter+=1;
-   res.send(counter.toString());
+app.post('/submit-comment/:articleName', function (req, res) {
+   // Check if the user is logged in
+    if (req.session && req.session.auth && req.session.auth.userId) {
+        // First check if the article exists and get the article-id
+        pool.query('SELECT * from articlep where title = $1', [req.params.articleName], function (err, result) {
+            if (err) {
+                res.status(500).send(err.toString());
+            } else {
+                if (result.rows.length === 0) {
+                    res.status(400).send('Article not found');
+                } else {
+                    var articleId = result.rows[0].id;
+                    // Now insert the right comment for this article
+                    pool.query(
+                        "INSERT INTO comment (comment, article_id, user_id) VALUES ($1, $2, $3)",
+                        [req.body.comment, articleId, req.session.auth.userId],
+                        function (err, result) {
+                            if (err) {
+                                res.status(500).send(err.toString());
+                            } else {
+                                res.status(200).send('Comment inserted!')
+                            }
+                        });
+                }
+            }
+       });
+    } else {
+        res.status(403).send('Only logged in users can comment');
+    }
 });
 
-var names=[];
-app.get('/submit-name', function (req, res) { //URL: /submit-name?name=xxxxx
-   var name=req.query.name;
-   names.push(name);
-  //JSON: Javascript Object Notation
-  res.send(JSON.stringify(names));
-  
-});
-
-app.get('/articles/:articleName', function(req,res){
-    //articleName === article-one
-    //articles[articleName]={} content object for article one
-    //var articleName=req.params.articleName;
-    pool.query("SELECT * FROM article WHERE title= $1",[req.params.articleName],function(err,result){
-       if(err){
-           res.status(500).send(err.toString());
-       } else{
-        if(result.rows.length===0){
+app.get('/articles/:articleName', function (req, res) {
+  // SELECT * FROM article WHERE title = '\'; DELETE WHERE a = \'asdf'
+  pool.query("SELECT * FROM articlep WHERE title = $1", [req.params.articleName], function (err, result) {
+    if (err) {
+        res.status(500).send(err.toString());
+    } else {
+        if (result.rows.length === 0) {
             res.status(404).send('Article not found');
-        }else{
+        } else {
             var articleData = result.rows[0];
             res.send(createTemplate(articleData));
         }
-       }
-    });
-    //res.send(createTemplate(articles[articleName]));
-});
-/*
-app.get('/article2', function(req,res){
-   res.send(createTemplate(articleTwo));
+    }
+  });
 });
 
-app.get('/article3', function(req,res){
-    res.send(createTemplate(articleThree));
-});
-*/
-app.get('/ui/style.css', function (req, res) {
-  res.sendFile(path.join(__dirname, 'ui', 'style.css'));
+app.get('/ui/:fileName', function (req, res) {
+  res.sendFile(path.join(__dirname, 'ui', req.params.fileName));
 });
 
-app.get('/ui/madi.png', function (req, res) {
-  res.sendFile(path.join(__dirname, 'ui', 'madi.png'));
-});
-
-/*var names=[];
-app.get('/submit-name/:name', function (req, res) {
-  var name=req.params.name;
-  names.push(name);
-  //JSON: Javascript Object Notation
-  res.send(JSON.stringify(names));
-  
-});
-*/
 
 var port = 8080; // Use 8080 for local development because you might already have apache running on 80
 app.listen(8080, function () {
-  console.log(`IMAD course app listening on port ${port}!`);
+  console.log(`Webapp listening on port ${port}!`);
 });
