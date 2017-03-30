@@ -5,10 +5,7 @@ var Pool = require('pg').Pool;
 var crypto = require('crypto');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var jsdom = require('jsdom').jsdom;
-var document = jsdom('<html></html>', {});
-var window = document.defaultView;
-var $ = require('jquery')(window);
+
 
 var config = {
   host: '127.0.0.1',
